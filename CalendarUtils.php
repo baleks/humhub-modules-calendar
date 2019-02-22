@@ -3,6 +3,7 @@
 namespace humhub\modules\calendar;
 
 use DateTime;
+use humhub\modules\calendar\models\CalendarEntry;
 
 /**
  * Description of CalendarUtils
@@ -35,6 +36,16 @@ class CalendarUtils
 
 
         return false;
+    }
+
+    public static function getFirstEventStartDate()
+    {
+        return CalendarEntry::find()->select('start_datetime')->orderBy('start_datetime ASC')->one()->start_datetime;
+    }
+
+    public static function getLastEventEndDate()
+    {
+        return CalendarEntry::find()->select('end_datetime')->orderBy('end_datetime DESC')->one()->end_datetime;
     }
 
 }

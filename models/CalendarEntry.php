@@ -698,8 +698,14 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, CalendarI
     public function generateIcs()
     {
         $timezone = Yii::$app->settings->get('timeZone');
-        $ics = new ICS($this->title, $this->description,$this->start_datetime, $this->end_datetime, null, null, $timezone, $this->all_day);
+        $ics = new ICS($this->title, $this->description, $this->start_datetime, $this->end_datetime, null, null, $timezone, $this->all_day);
         return $ics;
+    }
+
+    public static function generateMultipleIcs($events)
+    {
+        $multipleIcs = new MultipleIcs($events);
+        return $multipleIcs;
     }
 
     public function afterMove(ContentContainerActiveRecord $container = null)

@@ -64,7 +64,7 @@ class CalendarEntryQuery extends AbstractCalendarQuery
     /**
      * @var bool true if the participant join has already been added else false
      */
-    private $praticipantJoined = false;
+    private $participantJoined = false;
 
     public function filterResponded()
     {
@@ -86,9 +86,9 @@ class CalendarEntryQuery extends AbstractCalendarQuery
 
     private function participantJoin()
     {
-        if(!$this->praticipantJoined) {
+        if(!$this->participantJoined) {
             $this->_query->leftJoin('calendar_entry_participant', 'calendar_entry.id=calendar_entry_participant.calendar_entry_id AND calendar_entry_participant.user_id=:userId', [':userId' => $this->_user->id]);
-            $this->praticipantJoined = true;
+            $this->participantJoined = true;
         }
     }
 

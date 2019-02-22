@@ -120,4 +120,14 @@ class Events
         }
     }
 
+    public static function onContainerConfigMenuInit($event)
+    {
+        if (Yii::$app->user->getIdentity()->isModuleEnabled('calendar')) {
+            $event->sender->addItem([
+                'label' => Yii::t('CalendarModule.widgets_GlobalConfigMenu', 'Import/Export Calendar'),
+                'url' => Yii::$app->controller->contentContainer->createUrl('/calendar/container-config/import-export'),
+            ]);
+        }
+    }
+
 }

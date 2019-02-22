@@ -128,11 +128,27 @@ class ContainerConfigController extends ContentContainerController
         return $this->htmlRedirect($this->contentContainer->createUrl('/calendar/container-config/types'));
     }
 
-    public function actionCalendars()
+    public function actionImportExport()
     {
-        return $this->render('@calendar/views/common/calendarsConfig', [
+        $calendarService =  Yii::$app->getModule('calendar')->get(CalendarService::class);
+        $action = !empty($calendarService->getCalendarItemTypes($this->contentContainer)) ? 'import' : 'export';
+
+        return $this->redirect($this->contentContainer->createUrl("/calendar/container-config/{$action}"));
+    }
+
+    public function actionImport()
+    {
+        return $this->render('@calendar/views/import/index', [
             'contentContainer' => $this->contentContainer,
             'calendars' => $this->calendarService->getCalendarItemTypes($this->contentContainer)
+        ]);
+    }
+
+    public function actionExport()
+    {
+        return $this->render('@calendar/views/export/index', [
+            'contentContainer' => $this->contentContainer,
+            'filters' => []
         ]);
     }
 
@@ -150,5 +166,12 @@ class ContainerConfigController extends ContentContainerController
         }
 
         return $this->renderAjax('@calendar/views/common/editTypeModal', ['model' => $item]);
+    }
+
+    public function actionGenerateExportLink()
+    {
+        $exportLink = $this->contentContainer->createUrl('/calendar/entry/export-events', ['filters' => []], ['target' => '_blank']);
+
+        return $this->renderAjax('@calendar/views/export/exportLink', ['exportLink' => $exportLink]);
     }
 }

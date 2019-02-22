@@ -20,5 +20,6 @@ return [
         ['class' => 'humhub\modules\calendar\interfaces\CalendarService', 'event' => 'getItemTypes', 'callback' => ['humhub\modules\calendar\Events', 'onGetCalendarItemTypes']],
         ['class' => 'humhub\modules\calendar\interfaces\CalendarService', 'event' => 'findItems', 'callback' => ['humhub\modules\calendar\Events', 'onFindCalendarItems']],
         ['class' => '\humhub\modules\content\widgets\WallEntryLinks', 'event' => 'init', 'callback' => ['humhub\modules\calendar\Events', 'onWallEntryLinks']],
+        ['class' => '\humhub\modules\calendar\widgets\ContainerConfigMenu', 'event' => 'init', 'callback' => ['humhub\modules\calendar\Events', 'onContainerConfigMenuInit']],
     ],
 ];
