@@ -129,5 +129,13 @@ class Events
             ]);
         }
     }
+    
+    public static function onExportControllerInit($event)
+    {
+        $userModule = Yii::$app->getModule('user');
+        if (method_exists($userModule, 'setPublicActions')) {
+            $userModule->setPublicActions(['export-events']);
+        }
+    }
 
 }

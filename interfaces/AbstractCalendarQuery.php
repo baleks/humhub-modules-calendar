@@ -52,6 +52,8 @@ abstract class AbstractCalendarQuery extends Component
      * Available filters
      */
     const FILTER_PARTICIPATE = 1;
+    const FILTER_PUBLIC = 7;
+    const FILTER_SPACES = 'spaces';
 
     /**
      * @deprecated This is a legacy filter which is not active anymore
@@ -704,6 +706,14 @@ abstract class AbstractCalendarQuery extends Component
             if ($this->hasFilter(self::FILTER_MINE)) {
                 $this->filterMine();
             }
+
+            if ($this->hasFilter(self::FILTER_PUBLIC)) {
+                $this->filterPublic();
+            }
+
+            if ($this->hasFilter(self::FILTER_SPACES)) {
+                $this->filterForSpaces($this->_filters[self::FILTER_SPACES]);
+            }
         }
 
 
@@ -788,6 +798,16 @@ abstract class AbstractCalendarQuery extends Component
     public function filterIsParticipant()
     {
         throw new FilterNotSupportedException('Participant filter not supported for this query');
+    }
+
+    public function filterForSpaces($spaces)
+    {
+        throw new FilterNotSupportedException('Spaces filter not supported for this query');
+    }
+
+    public function filterPublic()
+    {
+        throw new FilterNotSupportedException('Public filter not supported for this query');
     }
 
     /**

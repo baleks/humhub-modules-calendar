@@ -1,5 +1,7 @@
 <?php
 
+use humhub\components\Controller;
+use humhub\modules\calendar\controllers\ExportController;
 use humhub\modules\space\widgets\Menu;
 use humhub\modules\user\widgets\ProfileMenu;
 use humhub\modules\space\widgets\Sidebar;
@@ -21,5 +23,6 @@ return [
         ['class' => 'humhub\modules\calendar\interfaces\CalendarService', 'event' => 'findItems', 'callback' => ['humhub\modules\calendar\Events', 'onFindCalendarItems']],
         ['class' => '\humhub\modules\content\widgets\WallEntryLinks', 'event' => 'init', 'callback' => ['humhub\modules\calendar\Events', 'onWallEntryLinks']],
         ['class' => '\humhub\modules\calendar\widgets\ContainerConfigMenu', 'event' => 'init', 'callback' => ['humhub\modules\calendar\Events', 'onContainerConfigMenuInit']],
+        ['class' => ExportController::class, 'event' => Controller::EVENT_INIT, 'callback' => ['humhub\modules\calendar\Events', 'onExportControllerInit']],
     ],
 ];

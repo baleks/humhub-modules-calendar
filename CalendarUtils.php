@@ -12,6 +12,9 @@ use humhub\modules\calendar\models\CalendarEntry;
  */
 class CalendarUtils
 {
+    const ADDITIONAL_EXPORT_FILTERS = [
+        'spaces', 'calendars'
+    ];
 
     /**
      *

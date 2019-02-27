@@ -116,6 +116,12 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, CalendarI
     const FILTER_NOT_RESPONDED = 3;
     const FILTER_RESPONDED = 4;
     const FILTER_MINE = 5;
+    const FILTER_PUBLIC = 7;
+
+    const FILTER_PROFILE_CALENDAR = 'profile';
+    const FILTER_PROFILE_SPACES_CALENDARS = 'profile_spaces';
+    const FILTER_EXTERNAL_CALENDARS = 'external';
+    const FILTER_ALL_CALENDARS = 'all';
 
     public function init()
     {
@@ -426,6 +432,33 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, CalendarI
             'allDay' => (boolean) $this->all_day,
             'updateUrl' => $this->content->container->createUrl('/calendar/entry/edit-ajax', ['id' => $this->id]),
             'viewUrl' => $this->content->container->createUrl('/calendar/entry/view', ['id' => $this->id, 'cal' => '1']),
+            'start' => Yii::$app->formatter->asDatetime($this->start_datetime, 'php:c'),
+            'end' => $end,
+        ];
+    }
+
+    public function getEventExportObject()
+    {
+        $end = Yii::$app->formatter->asDatetime($this->end_datetime, 'php:c');
+
+        if ($this->all_day) {
+            // Note: In fullcalendar the end time is the moment AFTER the event.
+            // But we store the exact event time 00:00:00 - 23:59:59 so add some time to the full day event.
+            $endDateTime = new DateTime($this->end_datetime);
+            $endDateTime->add(new DateInterval('PT2H'));
+            $end = $endDateTime->format('Y-m-d');
+        }
+
+        if(!Yii::$app->user->isGuest) {
+            Yii::$app->formatter->timeZone = Yii::$app->user->getIdentity()->time_zone;
+        }
+
+        $title = $this->title . (($this->closed) ? ' ('.Yii::t('CalendarModule.base', 'canceled').')' : '');
+
+        return (object) [
+            'title' => $title,
+            'description' => $this->description,
+            'allDay' => $this->isAllDay(),
             'start' => Yii::$app->formatter->asDatetime($this->start_datetime, 'php:c'),
             'end' => $end,
         ];

@@ -104,29 +104,41 @@ class CalendarService extends Component
      */
     public function getCalendarItems(DateTime $start, DateTime $end, $filters = [], ContentContainerActiveRecord $contentContainer = null, $limit = null)
     {
-        $result = [];
-
-        $event = new CalendarItemsEvent(['contentContainer' => $contentContainer, 'start' => $start, 'end' => $end, 'filters' => $filters, 'limit' => $limit]);
-        $this->trigger(static::EVENT_FIND_ITEMS, $event);
-
-        foreach($event->getItems() as $itemTypeKey => $items) {
-            $itemType = $this->getItemType($itemTypeKey, $contentContainer);
-
-
-            if($itemType && $itemType->isEnabled()) {
-                foreach ($items as $item) {
-                    $result[] = new CalendarItemWrapper(['itemType' => $itemType, 'options' => $item]);
-                }
-            }
-        }
-
-        $calendarEntries = CalendarEntryQuery::findForFilter($start, $end, $contentContainer, $filters, $limit);
+        $result = $this->getCalendarItemsEvents($contentContainer, $start, $end, $filters, $limit);
+        $calendarEntries = $this->getCalendarEntryEvents($start, $end, $contentContainer, $filters, $limit);
 
         $result = array_merge($calendarEntries, $result);
 
         ArrayHelper::multisort($result, ['startDateTime', 'endDateTime'], [SORT_ASC, SORT_ASC]);
 
         return (count($result) > $limit) ? array_slice($result, 0, $limit) : $result;
+    }
+
+    public function getCalendarItemsEvents($contentContainer, $start, $end, $filters, $limit, $exportableOnly = false)
+    {
+        $result = [];
+
+        $event = new CalendarItemsEvent(['contentContainer' => $contentContainer, 'start' => $start, 'end' => $end, 'filters' => $filters, 'limit' => $limit]);
+        $this->trigger(static::EVENT_FIND_ITEMS, $event);
+        foreach($event->getItems() as $itemTypeKey => $items) {
+            $itemType = $this->getItemType($itemTypeKey, $contentContainer);
+
+            if($itemType && $itemType->isEnabled()) {
+                foreach ($items as $item) {
+                    if ($exportableOnly && ! $itemType->isExportable()) {
+                        continue;
+                    }
+                    $result[] = new CalendarItemWrapper(['itemType' => $itemType, 'options' => $item]);
+                }
+            }
+        }
+
+        return $result;
+    }
+
+    public function getCalendarEntryEvents($start, $end, $contentContainer, $filters, $limit)
+    {
+        return CalendarEntryQuery::findForFilter($start, $end, $contentContainer, $filters, $limit);
     }
 
     public function getUpcomingEntries(ContentContainerActiveRecord $contentContainer = null, $daysInFuture = 7, $limit = 5)

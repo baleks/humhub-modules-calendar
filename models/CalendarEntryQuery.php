@@ -3,6 +3,7 @@ namespace humhub\modules\calendar\models;
 
 use humhub\modules\calendar\interfaces\AbstractCalendarQuery;
 use humhub\modules\cfiles\models\rows\AbstractFileSystemItemRow;
+use humhub\modules\content\models\Content;
 use Yii;
 use humhub\modules\space\models\Space;
 use DateTime;
@@ -66,6 +67,11 @@ class CalendarEntryQuery extends AbstractCalendarQuery
      */
     private $participantJoined = false;
 
+    /**
+     * @var bool true if the content join has already been added else false
+     */
+    private $contentJoined = false;
+
     public function filterResponded()
     {
         $this->participantJoin();
@@ -84,9 +90,29 @@ class CalendarEntryQuery extends AbstractCalendarQuery
         $this->_query->andWhere(['calendar_entry_participant.participation_state' => CalendarEntryParticipant::PARTICIPATION_STATE_ACCEPTED]);
     }
 
+    public function filterForSpaces($spaces)
+    {
+        $this->contentJoin();
+        $this->_query->andWhere(['IN', 'contentcontainer.guid', $spaces]);
+    }
+
+    public function filterPublic()
+    {
+        $this->contentJoin();
+        $this->_query->andWhere(['content.visibility' => Content::VISIBILITY_PUBLIC]);
+    }
+
+    private function contentJoin()
+    {
+        if (! $this->contentJoined) {
+            $this->_query->joinWith(['content', 'content.contentContainer', 'content.createdBy']);
+            $this->contentJoined = true;
+        }
+    }
+
     private function participantJoin()
     {
-        if(!$this->participantJoined) {
+        if (! $this->participantJoined) {
             $this->_query->leftJoin('calendar_entry_participant', 'calendar_entry.id=calendar_entry_participant.calendar_entry_id AND calendar_entry_participant.user_id=:userId', [':userId' => $this->_user->id]);
             $this->participantJoined = true;
         }

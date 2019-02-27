@@ -16,6 +16,9 @@
 namespace humhub\modules\calendar\controllers;
 
 
+use humhub\modules\calendar\CalendarUtils;
+use humhub\modules\calendar\models\forms\ExportFilter;
+use humhub\modules\space\modules\manage\models\MembershipSearch;
 use Yii;
 use humhub\modules\calendar\interfaces\CalendarService;
 use humhub\modules\admin\permissions\ManageSpaces;
@@ -146,16 +149,22 @@ class ContainerConfigController extends ContentContainerController
 
     public function actionExport()
     {
+        $spaces = [];
+        foreach (MembershipSearch::findByUser(Yii::$app->user->identity)->all() as $membership) {
+            if($membership->space->isModuleEnabled('calendar')) {
+                $spaces[] = $membership->space;
+            }
+        }
         return $this->render('@calendar/views/export/index', [
             'contentContainer' => $this->contentContainer,
-            'filters' => []
+            'filters' => [],
+            'spaces' => $spaces,
         ]);
     }
 
     public function actionEditCalendars($key)
     {
         $item = $this->calendarService->getItemType($key, $this->contentContainer);
-
         if(!$item) {
             throw new HttpException(404);
         }
@@ -170,7 +179,14 @@ class ContainerConfigController extends ContentContainerController
 
     public function actionGenerateExportLink()
     {
-        $exportLink = $this->contentContainer->createUrl('/calendar/entry/export-events', ['filters' => []], ['target' => '_blank']);
+        $filters = Yii::$app->request->post('filters', []);
+        foreach (CalendarUtils::ADDITIONAL_EXPORT_FILTERS as $exportFilter) {
+            if (! empty($filter = Yii::$app->request->post($exportFilter, []))) {
+                $filters[$exportFilter] = $filter;
+            }
+        }
+
+        $exportLink = $this->contentContainer->createUrl('/calendar/export/export-events', ['filters' => $filters], ['target' => '_blank']);
 
         return $this->renderAjax('@calendar/views/export/exportLink', ['exportLink' => $exportLink]);
     }

@@ -40,6 +40,13 @@ interface CalendarItem
     public function getFullCalendarArray();
 
     /**
+     * Returns the object required for export to external calendars.
+     *
+     * @return object
+     */
+    public function getEventExportObject();
+
+    /**
      * @return boolean weather or not this item spans exactly over a whole day
      */
     public function isAllDay();

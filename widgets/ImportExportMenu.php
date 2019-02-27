@@ -3,6 +3,7 @@
 namespace humhub\modules\calendar\widgets;
 
 use humhub\modules\calendar\interfaces\CalendarService;
+use humhub\modules\user\models\User;
 use humhub\widgets\BaseMenu;
 use Yii;
 
@@ -20,7 +21,7 @@ class ImportExportMenu extends BaseMenu
         /* @var $calendarService CalendarService */
         $calendarService =  Yii::$app->getModule('calendar')->get(CalendarService::class);
 
-        if(!empty($calendarService->getCalendarItemTypes($controller->contentContainer))) {
+        if (! empty($calendarService->getCalendarItemTypes($controller->contentContainer))) {
             $this->addItem([
                 'label' => Yii::t('CalendarModule.widgets_ImportExportMenu', 'Import'),
                 'url' => $controller->contentContainer->createUrl('/calendar/container-config/import'),
@@ -29,12 +30,14 @@ class ImportExportMenu extends BaseMenu
             ]);
         }
 
-        $this->addItem([
-            'label' => Yii::t('CalendarModule.widgets_ImportExportMenu', 'Export'),
-            'url' => $controller->contentContainer->createUrl('/calendar/container-config/export'),
-            'sortOrder' => 200,
-            'isActive' => ($controller->module && $controller->module->id == 'calendar' && $controller->id == 'container-config' && $controller->action->id == 'export'),
-        ]);
+        if ($controller->contentContainer instanceof User) {
+            $this->addItem([
+                'label' => Yii::t('CalendarModule.widgets_ImportExportMenu', 'Export'),
+                'url' => $controller->contentContainer->createUrl('/calendar/container-config/export'),
+                'sortOrder' => 200,
+                'isActive' => ($controller->module && $controller->module->id == 'calendar' && $controller->id == 'container-config' && $controller->action->id == 'export'),
+            ]);
+        }
 
         parent::init();
     }

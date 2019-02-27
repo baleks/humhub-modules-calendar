@@ -2,9 +2,6 @@
 
 namespace humhub\modules\calendar\controllers;
 
-use DateTime;
-use humhub\modules\calendar\CalendarUtils;
-use humhub\modules\calendar\interfaces\CalendarService;
 use Yii;
 use yii\web\HttpException;
 use humhub\modules\calendar\models\forms\CalendarEntryForm;
@@ -236,21 +233,6 @@ class EntryController extends ContentContainerController
     {
         $calendarEntry = $this->getCalendarEntry(Yii::$app->request->get('id'));
         $ics = $calendarEntry->generateIcs();
-        return Yii::$app->response->sendContentAsFile($ics, uniqid() . '.ics', ['mimeType' => 'text/calendar']);
-    }
-
-    public function actionExportEvents()
-    {
-        $calendarService = $this->module->get(CalendarService::class);
-        $initialStartDate = CalendarUtils::getFirstEventStartDate();
-        $initialEndDate = CalendarUtils::getLastEventEndDate();
-
-        $filters = Yii::$app->request->get('filters', []);
-        if ($this->contentContainer instanceof User) {
-            Yii::$app->user->setIdentity($this->contentContainer);
-        }
-        $items = $calendarService->getCalendarItems(new DateTime($initialStartDate), new DateTime($initialEndDate), $filters);
-        $ics = CalendarEntry::generateMultipleIcs($items);
         return Yii::$app->response->sendContentAsFile($ics, uniqid() . '.ics', ['mimeType' => 'text/calendar']);
     }
 }

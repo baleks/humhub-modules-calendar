@@ -40,6 +40,11 @@ class CalendarItemType extends Model
     const OPTION_TITLE = 'title';
 
     /**
+     * @var string Description option key
+     */
+    const OPTION_DESCRIPTION = 'description';
+
+    /**
      * @var string
      */
     const OPTION_ALL_DAY = 'allDay';
@@ -70,14 +75,20 @@ class CalendarItemType extends Model
     public $color;
 
     /**
-     * @var string color to be saved
+     * @var boolean item state
      */
     public $enabled;
+
+    /**
+     * @var boolean indicate if item can be exportable to external calendar
+     */
+    public $exportable;
 
     public function init()
     {
         $this->color = $this->getColor();
         $this->enabled = $this->isEnabled();
+        $this->exportable = $this->isExportable();
     }
 
     /**
@@ -87,7 +98,7 @@ class CalendarItemType extends Model
     {
         return [
             ['color', 'required'],
-            ['enabled', 'integer', 'min' => 0, 'max' => 1],
+            [['enabled', 'exportable'], 'integer', 'min' => 0, 'max' => 1],
             ['color', 'match', 'pattern' => '/^#(?:[0-9a-fA-F]{3}){1,2}$/'],
         ];
     }
@@ -98,6 +109,19 @@ class CalendarItemType extends Model
     public function isEnabled()
     {
         $settingKey = $this->key.'_item_enabled';
+        if($this->contentContainer) {
+            return (boolean) $this->getSettings()->contentContainer($this->contentContainer)->getInherit($settingKey, true);
+        } else {
+            return (boolean) $this->getSettings()->get($settingKey, true);
+        }
+    }
+
+    /**
+     * Checks if the given item type is exportable for this
+     */
+    public function isExportable()
+    {
+        $settingKey = $this->key.'_item_exportable';
         if($this->contentContainer) {
             return (boolean) $this->getSettings()->contentContainer($this->contentContainer)->getInherit($settingKey, true);
         } else {
@@ -123,6 +147,16 @@ class CalendarItemType extends Model
         }
     }
 
+    public function updateExportable($isExportable)
+    {
+        $settingKey = $this->key.'_item_exportable';
+        if($this->contentContainer) {
+            return $this->getSettings()->contentContainer($this->contentContainer)->set($settingKey, $isExportable);
+        } else {
+            return $this->getSettings()->set($settingKey, $isExportable);
+        }
+    }
+
     /**
      * @return string The options default color or fallback color if not color was defined.
      */
@@ -142,6 +176,18 @@ class CalendarItemType extends Model
     {
         if(!empty($this->options) && isset($this->options[static::OPTION_TITLE])) {
             return $this->options[static::OPTION_TITLE];
+        }
+
+        return $this->key;
+    }
+
+    /**
+     * @return string returns the options description
+     */
+    public function getDescription()
+    {
+        if(!empty($this->options) && isset($this->options[static::OPTION_DESCRIPTION])) {
+            return $this->options[static::OPTION_DESCRIPTION];
         }
 
         return $this->key;
@@ -187,6 +233,7 @@ class CalendarItemType extends Model
         if($this->validate()) {
             $this->updateColor($this->color);
             $this->updateEnabled($this->enabled);
+            $this->updateExportable($this->exportable);
             return true;
         }
 

@@ -47,6 +47,7 @@ if($model instanceof CalendarItemType) {
             </div>
             <?php if($model instanceof CalendarItemType) : ?>
                 <?= $form->field($model, 'enabled')->checkbox() ?>
+                <?= $form->field($model, 'exportable')->checkbox() ?>
             <?php endif; ?>
         </div>
         <div class="modal-footer">

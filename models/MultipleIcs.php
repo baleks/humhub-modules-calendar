@@ -43,13 +43,14 @@ class MultipleIcs
         ];
 
         foreach ($this->events as $event) {
-            $end_datetime = $event->all_day ? (new DateTime($event->end_datetime))->add(new DateInterval('P1D')) : $event->end_datetime;
+            $event = $event->getEventExportObject();
+            $end = $event->allDay ? (new DateTime($event->end))->add(new DateInterval('P1D')) : $event->end;
             $ics_event = [
                 'BEGIN:VEVENT',
                 'LOCATION:',
                 'DESCRIPTION:' . $this->escapeString($event->description),
-                'DTSTART:' . $this->formatTimestamp($event->start_datetime, $event->all_day),
-                'DTEND:' . $this->formatTimestamp($end_datetime, $event->all_day),
+                'DTSTART:' . $this->formatTimestamp($event->start, $event->allDay),
+                'DTEND:' . $this->formatTimestamp($end, $event->allDay),
                 'SUMMARY:' . $this->escapeString($event->title),
                 'URL:',
                 'DTSTAMP:' . $this->formatTimestamp('now'),

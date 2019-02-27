@@ -29,6 +29,7 @@ class CalendarItemWrapper extends Component implements CalendarItem
     const OPTION_START = 'start';
     const OPTION_END = 'end';
     const OPTION_TITLE = 'title';
+    const OPTION_DESCRIPTION = 'description';
     const OPTION_COLOR = 'color';
     const OPTION_ALL_DAY = 'allDay';
     const OPTION_UPDATE_URL = 'updateUrl';
@@ -74,6 +75,20 @@ class CalendarItemWrapper extends Component implements CalendarItem
     /**
      * @inheritdoc
      */
+    public function getEventExportObject()
+    {
+        return (object) [
+            'title' => $this->getTitle(),
+            'description' => $this->getDescription(),
+            'allDay' => $this->isAllDay(),
+            'start' => Yii::$app->formatter->asDatetime($this->getStartDateTime(), 'php:c'),
+            'end' => Yii::$app->formatter->asDatetime($this->getEndDateTime(), 'php:c'),
+        ];
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getStartDateTime()
     {
         return $this->getOption(static::OPTION_START, new DateTime());
@@ -108,6 +123,11 @@ class CalendarItemWrapper extends Component implements CalendarItem
     public function getTitle()
     {
         return $this->getOption(static::OPTION_TITLE, $this->itemType->getTitle());
+    }
+
+    public function getDescription()
+    {
+        return $this->getOption(static::OPTION_DESCRIPTION, $this->itemType->getDescription());
     }
 
     public function getColor()
