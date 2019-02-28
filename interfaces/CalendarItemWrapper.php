@@ -26,6 +26,7 @@ use yii\helpers\Html;
 
 class CalendarItemWrapper extends Component implements CalendarItem
 {
+    const OPTION_UUID = 'uuid';
     const OPTION_START = 'start';
     const OPTION_END = 'end';
     const OPTION_TITLE = 'title';
@@ -78,6 +79,7 @@ class CalendarItemWrapper extends Component implements CalendarItem
     public function getEventExportObject()
     {
         return (object) [
+            'uuid' => $this->getUuid(),
             'title' => $this->getTitle(),
             'description' => $this->getDescription(),
             'allDay' => $this->isAllDay(),
@@ -128,6 +130,11 @@ class CalendarItemWrapper extends Component implements CalendarItem
     public function getDescription()
     {
         return $this->getOption(static::OPTION_DESCRIPTION, $this->itemType->getDescription());
+    }
+
+    public function getUuid()
+    {
+        return $this->getOption(static::OPTION_UUID, $this->itemType->getUuid());
     }
 
     public function getColor()

@@ -8,7 +8,6 @@
 namespace humhub\modules\calendar\controllers;
 
 use DateTime;
-use humhub\components\Controller;
 use humhub\modules\calendar\interfaces\CalendarService;
 use humhub\modules\calendar\models\CalendarEntry;
 use humhub\modules\content\components\ContentContainerController;

@@ -47,14 +47,12 @@ class MultipleIcs
             $end = $event->allDay ? (new DateTime($event->end))->add(new DateInterval('P1D')) : $event->end;
             $ics_event = [
                 'BEGIN:VEVENT',
-                'LOCATION:',
-                'DESCRIPTION:' . $this->escapeString($event->description),
+                'UID:' . $this->getUuid($event),
+                'DESCRIPTION:' . $this->escapeString(isset($event->description) ? $event->description : ''),
                 'DTSTART:' . $this->formatTimestamp($event->start, $event->allDay),
                 'DTEND:' . $this->formatTimestamp($end, $event->allDay),
                 'SUMMARY:' . $this->escapeString($event->title),
-                'URL:',
                 'DTSTAMP:' . $this->formatTimestamp('now'),
-                'UID:' . uniqid(),
                 'END:VEVENT'
             ];
             $ics_calendar = array_merge($ics_calendar, $ics_event);
@@ -78,5 +76,10 @@ class MultipleIcs
     private function escapeString($str)
     {
         return preg_replace('/([\,;])/','\\\$1', $str);
+    }
+
+    private function getUuid($event)
+    {
+        return isset($event->uuid) ? $event->uuid : uniqid();
     }
 }

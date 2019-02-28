@@ -456,6 +456,7 @@ class CalendarEntry extends ContentActiveRecord implements Searchable, CalendarI
         $title = $this->title . (($this->closed) ? ' ('.Yii::t('CalendarModule.base', 'canceled').')' : '');
 
         return (object) [
+            'uuid' => $this->content->guid,
             'title' => $title,
             'description' => $this->description,
             'allDay' => $this->isAllDay(),

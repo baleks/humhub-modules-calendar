@@ -24,6 +24,12 @@ use humhub\modules\content\components\ContentContainerActiveRecord;
 
 class CalendarItemType extends Model
 {
+
+    /**
+     * @var string uuid option key
+     */
+    const OPTION_UUID = 'uuid';
+
     /**
      * @var string Color option key
      */
@@ -191,6 +197,18 @@ class CalendarItemType extends Model
         }
 
         return $this->key;
+    }
+
+    /**
+     * @return string returns the options description
+     */
+    public function getUuid()
+    {
+        if(!empty($this->options) && isset($this->options[static::OPTION_UUID])) {
+            return $this->options[static::OPTION_UUID];
+        }
+
+        return uniqid();
     }
 
     /**
