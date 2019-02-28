@@ -14,9 +14,9 @@ use yii\helpers\Html;
         <div class="modal-body">
 
             <div class="clearfix">
-                <textarea rows="3" class="form-control" spellcheck="false" readonly><?= Html::encode($exportLink) ?></textarea>
+                <textarea rows="3" class="form-control export-link-txt" spellcheck="false" readonly><?= Html::encode($exportLink) ?></textarea>
                 <p class="help-block pull-right">
-                    <a href="#" data-action-click="copyToClipboard" data-action-target=".permalink-txt">
+                    <a href="#" data-action-click="copyToClipboard" data-action-target=".export-link-txt">
                         <i class="fa fa-clipboard" aria-hidden="true"></i> <?= Yii::t('CalendarModule.config', 'Copy to clipboard'); ?>
                     </a>
                 </p>
